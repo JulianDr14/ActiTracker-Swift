@@ -73,7 +73,9 @@ struct AddActivity: View {
             }
             
             Button(action: {
-                addActivity()
+                withAnimation {
+                    addActivity()
+                }
                 // Se oculta el teclado si es necesario.
                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }) {
@@ -114,10 +116,8 @@ struct AddActivity: View {
     }
 }
 
-#if DEBUG
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         AddActivity().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }
-#endif

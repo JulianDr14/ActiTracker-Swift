@@ -28,7 +28,7 @@ struct SummarySectionView: View {
                     Text(verbatim: "\(formatPercent(trackedPercent))%")
                         .fontWeight(.light)
                 }
-                ProgressView(value: trackedPercent)
+                AnimatedProgressBar(targetProgress: trackedPercent)
             }
             
             VStack {
@@ -38,7 +38,7 @@ struct SummarySectionView: View {
                     Text(verbatim: "\(formatPercent(untrackedPercent))%")
                         .fontWeight(.light)
                 }
-                ProgressView(value: untrackedPercent)
+                AnimatedProgressBar(targetProgress: untrackedPercent)
             }
         }
         .padding(16)
@@ -46,6 +46,5 @@ struct SummarySectionView: View {
             RoundedRectangle(cornerRadius: 16)
                 .stroke(Color.gray, lineWidth: 1)
         )
-        .padding(.horizontal)
     }
 }
