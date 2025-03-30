@@ -9,12 +9,20 @@ import SwiftUI
 
 struct ColorCircleView: View {
     let hex: String
+    let width: CGFloat
+    let height: CGFloat
+    
+    init(hex: String, width: CGFloat = 20, height: CGFloat = 20) {
+        self.hex = hex
+        self.width = width
+        self.height = height
+    }
     
     
     var body: some View {
         Circle()
             .fill(Color(hex: hex))
-            .frame(width: 20, height: 20)
+            .frame(width: width, height: height)
     }
 }
 

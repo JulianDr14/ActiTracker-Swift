@@ -88,7 +88,8 @@ struct ActivityTimerView: View {
                 }
             }
             .padding(16)
-            .frame(width: 350, height: 250)
+            .frame(maxWidth: .infinity)
+            .frame(height: 250)
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
                     .stroke(Color.gray, lineWidth: 1)

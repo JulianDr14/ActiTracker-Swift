@@ -1,6 +1,19 @@
 {
   "sourceLanguage" : "es-419",
   "strings" : {
+    "%@: %@" : {
+      "localizations" : {
+        "es-419" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@: %2$@"
+          }
+        }
+      }
+    },
+    "%@%%" : {
+
+    },
     "activity_breakdown" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -207,6 +220,9 @@
           }
         }
       }
+    },
+    "No hay datos" : {
+
     },
     "repor_label_date" : {
       "extractionState" : "manual",

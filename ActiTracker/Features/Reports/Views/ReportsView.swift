@@ -41,9 +41,7 @@ struct ReportsView: View {
                         .onChange(of: viewModel.selectedDate) { newValue, transaction in
                             logsOfDay.nsPredicate = viewModel.logsPredicate
                         }
-                        .labelsHidden()
                 }
-                .padding(.horizontal)
                 
                 // Obtención de datos a través del view model
                 let datosAgrupados = viewModel.agruparDatos(activityItems: Array(activityItems), logsOfDay: Array(logsOfDay))
@@ -70,6 +68,7 @@ struct ReportsView: View {
                 
                 Spacer()
             }
+            .padding()
         }
     }
 }

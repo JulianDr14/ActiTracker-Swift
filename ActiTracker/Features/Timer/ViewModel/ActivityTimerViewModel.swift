@@ -23,7 +23,7 @@ class ActivityTimerViewModel: ObservableObject {
     private let viewContext: NSManagedObjectContext
     private let today: Date = Calendar.current.startOfDay(for: Date())
     
-    private var feedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
+    private var feedbackGenerator = UINotificationFeedbackGenerator()
     
     // Identificador de la Live Activity
     private var liveActivityId: String?
@@ -92,12 +92,12 @@ class ActivityTimerViewModel: ObservableObject {
     
     // MARK: - Funciones de Timer y Live Activity
     func toggleTimer() {
-        // TODO: aunque me aseguro de llamarlo en el hilo principal, no se ejecuta el feedback
-        DispatchQueue.main.async {
-            self.feedbackGenerator.impactOccurred()
-        }
-        print("Feedback generado")
         isTimerRunning ? stopTimer() : startTimer()
+        vibrate(type: .success)
+    }
+    
+    func vibrate(type: UINotificationFeedbackGenerator.FeedbackType) {
+        feedbackGenerator.notificationOccurred(type)
     }
     
     private func startTimer() {

@@ -20,10 +20,10 @@ struct TimeDistributionSectionView: View {
                 .frame(width: 200, height: 200)
         }
         .padding(16)
+        .frame(maxWidth: .infinity)
         .overlay(
             RoundedRectangle(cornerRadius: 16)
                 .stroke(Color.gray, lineWidth: 1)
         )
-        .padding(.horizontal)
     }
 }

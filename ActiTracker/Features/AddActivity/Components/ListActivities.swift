@@ -28,6 +28,7 @@ struct ListActivities: View {
                     Spacer()
                 }
                 .listRowInsets(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
+                .transition(.move(edge: .leading))
             }
             .onDelete { offsets in
                 viewModel.deleteActivities(offsets: offsets, activities: activities)
