@@ -10,7 +10,7 @@ import SwiftUI
 import WidgetKit
 
 struct MyExtensionControl: ControlWidget {
-    static let kind: String = "com.cortolima.ActiTracker.MyExtension"
+    static let kind: String = "com.rodcode.ActiTracker.MyExtension"
 
     var body: some ControlWidgetConfiguration {
         AppIntentControlConfiguration(

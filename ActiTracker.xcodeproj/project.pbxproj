@@ -212,7 +212,7 @@
 				};
 			};
 			buildConfigurationList = 1316C1D02D90C8B8008DF188 /* Build configuration list for PBXProject "ActiTracker" */;
-			developmentRegion = "es-419";
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
@@ -405,7 +405,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = 9P2XVDJWGT;
+				DEVELOPMENT_TEAM = JH599K6475;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ActiTracker/Info.plist;
@@ -423,7 +423,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.cortolima.ActiTracker;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rodcode.ActiTracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
@@ -442,7 +442,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = 9P2XVDJWGT;
+				DEVELOPMENT_TEAM = JH599K6475;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ActiTracker/Info.plist;
@@ -460,7 +460,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.cortolima.ActiTracker;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rodcode.ActiTracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
@@ -476,7 +476,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 9P2XVDJWGT;
+				DEVELOPMENT_TEAM = JH599K6475;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MyExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MyExtension;
@@ -487,7 +487,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.cortolima.ActiTracker.MyExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rodcode.ActiTracker.MyExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -503,7 +503,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 9P2XVDJWGT;
+				DEVELOPMENT_TEAM = JH599K6475;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MyExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MyExtension;
@@ -514,7 +514,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.cortolima.ActiTracker.MyExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rodcode.ActiTracker.MyExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
