@@ -1,9 +1,9 @@
 {
-  "sourceLanguage" : "es-419",
+  "sourceLanguage" : "en",
   "strings" : {
     "%@: %@" : {
       "localizations" : {
-        "es-419" : {
+        "en" : {
           "stringUnit" : {
             "state" : "new",
             "value" : "%1$@: %2$@"
