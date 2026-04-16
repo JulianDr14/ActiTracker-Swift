@@ -14,6 +14,12 @@
     "%@%%" : {
 
     },
+    "%lld actividades" : {
+
+    },
+    "Actividad actual" : {
+
+    },
     "activity_breakdown" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -150,6 +156,15 @@
         }
       }
     },
+    "Crea tu primera actividad para comenzar a medir tu tiempo." : {
+
+    },
+    "Disponible" : {
+
+    },
+    "Elige una actividad" : {
+
+    },
     "Habilitar vibracion" : {
 
     },
@@ -221,7 +236,13 @@
         }
       }
     },
+    "Hoy" : {
+
+    },
     "No hay datos" : {
+
+    },
+    "Pause Activity" : {
 
     },
     "repor_label_date" : {
@@ -309,6 +330,12 @@
         }
       }
     },
+    "Resume Activity" : {
+
+    },
+    "Seleccionada" : {
+
+    },
     "settings_change_language" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -342,6 +369,9 @@
           }
         }
       }
+    },
+    "Stop Activity" : {
+
     },
     "timer_header" : {
       "extractionState" : "manual",
