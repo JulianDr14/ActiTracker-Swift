@@ -10,8 +10,10 @@ import ActivityKit
 
 struct ActivitiesAttributes: ActivityAttributes {
     public struct ContentState: Codable, Hashable {
-        var baseTime: TimeInterval
         var name: String
         var colorHex: String
+        var elapsedTime: TimeInterval
+        var timerStartDate: Date?
+        var isRunning: Bool
     }
 }

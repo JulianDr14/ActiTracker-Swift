@@ -9,58 +9,57 @@ import Foundation
 import ActivityKit
 
 final class ActivittiesUseCase {
+    enum LiveActivityError: LocalizedError {
+        case activitiesDisabled
+        
+        var errorDescription: String? {
+            switch self {
+            case .activitiesDisabled:
+                return "Live Activities are disabled on this device."
+            }
+        }
+    }
+    
     /// Inicia una Live Activity con el nombre, color y tiempo base proporcionados.
-    /// - Parameters:
-    ///   - name: Nombre de la actividad.
-    ///   - colorHex: Color en formato hexadecimal.
-    ///   - baseTime: Tiempo inicial en segundos.
+    /// - Parameter state: Estado inicial de la Live Activity.
     /// - Returns: El identificador de la actividad iniciada.
-    static func startActivity(name: String, colorHex: String, baseTime: TimeInterval) throws -> String {
-        // Verifica si las Live Activities están habilitadas
+    static func startActivity(state: ActivitiesAttributes.ContentState) throws -> String {
         guard ActivityAuthorizationInfo().areActivitiesEnabled else {
-            return "No se puede realizar la actividad"
+            throw LiveActivityError.activitiesDisabled
         }
         
-        // Se crea el estado inicial con el tiempo base que se quiere mostrar
-        let initialState = ActivitiesAttributes.ContentState(baseTime: baseTime, name: name, colorHex: colorHex)
-        
-        // Se define una fecha futura para indicar cuándo la actividad se vuelve "stale"
-        let futureDate: Date = .now + 3600
-        
-        // Se crea el contenido de la actividad con el estado inicial y la fecha de caducidad
-        let activityContent = ActivityContent(state: initialState, staleDate: futureDate)
-        
-        // Se crean los atributos de la actividad (aquí usamos siempre ActivitiesAttributes)
+        let activityContent = ActivityContent(state: state, staleDate: nil)
         let attributes = ActivitiesAttributes()
         
-        do {
-            // Se solicita la Live Activity
-            let activity = try Activity.request(attributes: attributes, content: activityContent)
-            return activity.id
-        } catch {
-            throw error
-        }
+        let activity = try Activity.request(attributes: attributes, content: activityContent)
+        return activity.id
     }
     
     /// Actualiza la Live Activity identificada con nuevos valores.
     /// - Parameters:
     ///   - activityIdentifier: Identificador de la actividad a actualizar.
-    ///   - name: Nuevo nombre de la actividad.
-    ///   - colorHex: Nuevo color en hexadecimal.
-    ///   - baseTime: Nuevo tiempo base.
-    static func updateActivity(activityIdentifier: String, name: String, colorHex: String, baseTime: TimeInterval) async {
-        let upgradeContentState = ActivitiesAttributes.ContentState(baseTime: baseTime, name: name, colorHex: colorHex)
-        // Buscamos la actividad Live Activity por su identificador
-        let activity = Activity<ActivitiesAttributes>.activities.first(where: { $0.id == activityIdentifier })
-        let activityContent = ActivityContent(state: upgradeContentState, staleDate: .now + 3600)
+    ///   - state: Nuevo estado que debe mostrarse.
+    static func updateActivity(activityIdentifier: String, state: ActivitiesAttributes.ContentState) async {
+        let activity = activity(activityIdentifier: activityIdentifier)
+        let activityContent = ActivityContent(state: state, staleDate: nil)
         
         await activity?.update(activityContent)
+    }
+    
+    static func activity(activityIdentifier: String) -> Activity<ActivitiesAttributes>? {
+        Activity<ActivitiesAttributes>.activities.first(where: { $0.id == activityIdentifier })
+    }
+    
+    static func endOtherActivities(excluding activityIdentifier: String?) async {
+        for activity in Activity<ActivitiesAttributes>.activities where activity.id != activityIdentifier {
+            await activity.end(nil, dismissalPolicy: .immediate)
+        }
     }
     
     /// Finaliza la Live Activity identificada.
     /// - Parameter activityIdentifier: Identificador de la actividad a finalizar.
     static func deleteActivity(activityIdentifier: String) async {
-        let activity = Activity<ActivitiesAttributes>.activities.first(where: { $0.id == activityIdentifier })
-        await activity?.end(nil)
+        let activity = activity(activityIdentifier: activityIdentifier)
+        await activity?.end(nil, dismissalPolicy: .immediate)
     }
 }
