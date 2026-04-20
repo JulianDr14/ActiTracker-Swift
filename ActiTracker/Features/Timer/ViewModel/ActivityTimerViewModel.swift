@@ -24,6 +24,7 @@ final class ActivityTimerViewModel: ObservableObject {
     private let viewContext: NSManagedObjectContext
     private var timer: Timer?
     private var feedbackGenerator = UINotificationFeedbackGenerator()
+    private var persistedTotalsByActivity: [UUID: TimeInterval] = [:]
     
     var isTimerRunning: Bool {
         status == .running
@@ -68,6 +69,7 @@ final class ActivityTimerViewModel: ObservableObject {
             object: nil
         )
         
+        reloadPersistedTotals()
         syncWithSession()
     }
     
@@ -78,7 +80,12 @@ final class ActivityTimerViewModel: ObservableObject {
     
     func formattedTotalTime(for activity: ActivityItem) -> String {
         guard let activityId = activity.id else { return format(0) }
-        return format(TimerSessionStore.totalTime(for: activityId, activeSession: currentSession))
+        let persistedTotal = persistedTotalsByActivity[activityId, default: 0]
+        let runningContribution = TimerSessionStore.runningContribution(
+            for: activityId,
+            session: currentSession
+        )
+        return format(persistedTotal + runningContribution)
     }
     
     func select(activity: ActivityItem) {
@@ -143,6 +150,7 @@ final class ActivityTimerViewModel: ObservableObject {
     
     private func syncWithSession() {
         let session = TimerSessionStore.currentSession()
+        reloadPersistedTotals()
         
         if let session {
             status = session.isRunning ? .running : .paused
@@ -177,6 +185,25 @@ final class ActivityTimerViewModel: ObservableObject {
     private func refreshElapsedTime() {
         guard let session = TimerSessionStore.currentSession() else { return }
         timeElapsed = TimerSessionStore.displayedElapsed(for: session)
+    }
+    
+    private func reloadPersistedTotals() {
+        let request: NSFetchRequest<ActivityLog> = ActivityLog.fetchRequest()
+        request.predicate = NSPredicate(
+            format: "date == %@",
+            Calendar.current.startOfDay(for: Date()) as NSDate
+        )
+        
+        do {
+            let logs = try viewContext.fetch(request)
+            persistedTotalsByActivity = logs.reduce(into: [:]) { partialResult, log in
+                guard let activityId = log.idActivityItem else { return }
+                partialResult[activityId, default: 0] += TimeInterval(log.timeSpent)
+            }
+        } catch {
+            print("Error al recargar los tiempos del día: \(error)")
+            persistedTotalsByActivity = [:]
+        }
     }
     
     private func fetchActivity(with activityId: UUID) -> ActivityItem? {

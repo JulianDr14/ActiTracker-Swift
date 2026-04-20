@@ -95,6 +95,25 @@ enum TimerSessionStore {
         return persisted + max(0, overlapEnd.timeIntervalSince(overlapStart))
     }
     
+    static func runningContribution(for activityId: UUID, session: TimerSession?, now: Date = Date()) -> TimeInterval {
+        guard let session,
+              session.activityId == activityId,
+              session.isRunning,
+              let sessionStartDate = session.sessionStartDate,
+              now > sessionStartDate else {
+            return 0
+        }
+        
+        let dayStart = startOfDay(for: now)
+        guard let nextDay = calendar.date(byAdding: .day, value: 1, to: dayStart) else {
+            return 0
+        }
+        
+        let overlapStart = max(sessionStartDate, dayStart)
+        let overlapEnd = min(now, nextDay)
+        return max(0, overlapEnd.timeIntervalSince(overlapStart))
+    }
+    
     static func start(activityId: UUID, activityName: String, colorHex: String) async throws -> TimerSession {
         let now = Date()
         let today = startOfDay(for: now)

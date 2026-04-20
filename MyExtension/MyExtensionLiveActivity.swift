@@ -31,14 +31,19 @@ struct MyExtensionLiveActivity: Widget {
                     ExpandedActivityFooter(state: context.state)
                 }
             } compactLeading: {
-                ActivityCompactBadge(colorHex: context.state.colorHex)
+                ActivityCompactBadge(colorHex: context.state.colorHex, size: 10, prominence: .subtle)
             } compactTrailing: {
-                LiveActivityTimerText(state: context.state, style: .compact)
-                    .frame(minWidth: 46, alignment: .trailing)
+                HStack(spacing: 5) {
+                    Image(systemName: context.state.isRunning ? "clock.fill" : "pause.fill")
+                        .font(.system(size: 9, weight: .bold))
+                        .foregroundStyle(Color.white.opacity(0.68))
+                    LiveActivityTimerText(state: context.state, style: .compact)
+                }
+                .frame(minWidth: 54, alignment: .trailing)
             } minimal: {
                 MinimalActivityView(state: context.state)
             }
-            .keylineTint(Color(hex: context.state.colorHex).opacity(0.5))
+            .keylineTint(.clear)
         }
     }
 }
@@ -47,48 +52,50 @@ private struct LockScreenActivityView: View {
     let state: ActivitiesAttributes.ContentState
     
     var body: some View {
-        let accent = Color(hex: state.colorHex)
-        
-        VStack(spacing: 0) {
-            HStack(alignment: .top, spacing: 14) {
-                ActivityCompactBadge(colorHex: state.colorHex, size: 16)
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack(spacing: 8) {
-                        Text(state.name)
-                            .font(.system(.headline, design: .rounded, weight: .bold))
-                            .lineLimit(1)
-                            .foregroundStyle(.white)
-                        StatusCapsule(state: state)
-                    }
-                    
-                    LiveActivityTimerText(state: state, style: .lockScreen)
+        HStack(alignment: .center, spacing: 14) {
+            ActivityCompactBadge(colorHex: state.colorHex, size: 14, prominence: .regular)
+            
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 8) {
+                    Text(state.name)
+                        .font(.system(.headline, design: .rounded, weight: .bold))
+                        .lineLimit(1)
+                        .foregroundStyle(.white)
+                    StatusCapsule(state: state)
                 }
                 
-                Spacer(minLength: 8)
-                ActivityButtons(state: state, axis: .horizontal)
+                LiveActivityTimerText(state: state, style: .lockScreen)
             }
-            .padding(18)
+            
+            Spacer(minLength: 8)
+            ActivityButtons(state: state, axis: .horizontal)
         }
-        .background(
-            ZStack {
-                RoundedRectangle(cornerRadius: 28, style: .continuous)
+        .padding(.horizontal, 18)
+        .padding(.vertical, 16)
+        .background(lockScreenBackground)
+        .padding(.vertical, 8)
+    }
+    
+    private var lockScreenBackground: some View {
+        RoundedRectangle(cornerRadius: 26, style: .continuous)
+            .fill(Color.black.opacity(0.88))
+            .overlay(alignment: .leading) {
+                RoundedRectangle(cornerRadius: 26, style: .continuous)
                     .fill(
                         LinearGradient(
                             colors: [
-                                accent.opacity(0.86),
-                                accent.opacity(0.35),
-                                Color.black.opacity(0.96)
+                                Color(hex: state.colorHex).opacity(0.28),
+                                .clear
                             ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
+                            startPoint: .leading,
+                            endPoint: .trailing
                         )
                     )
-                RoundedRectangle(cornerRadius: 28, style: .continuous)
-                    .strokeBorder(.white.opacity(0.12), lineWidth: 1)
             }
-        )
-        .padding(.vertical, 8)
+            .overlay {
+                RoundedRectangle(cornerRadius: 26, style: .continuous)
+                    .strokeBorder(Color.white.opacity(0.08), lineWidth: 1)
+            }
     }
 }
 
@@ -134,12 +141,12 @@ private struct MinimalActivityView: View {
     var body: some View {
         ZStack {
             Circle()
-                .fill(Color(hex: state.colorHex).opacity(0.18))
+                .fill(Color(hex: state.colorHex).opacity(0.12))
             Image(systemName: state.isRunning ? "pause.fill" : "play.fill")
                 .font(.system(size: 11, weight: .bold))
                 .foregroundStyle(Color(hex: state.colorHex))
         }
-        .frame(width: 28, height: 28)
+        .frame(width: 24, height: 24)
     }
 }
 
@@ -197,18 +204,30 @@ private struct ActivityButtons: View {
 }
 
 private struct ActivityCompactBadge: View {
+    enum Prominence {
+        case regular
+        case subtle
+    }
+    
     let colorHex: String
     var size: CGFloat = 14
+    var prominence: Prominence = .regular
     
     var body: some View {
         ZStack {
             Circle()
-                .fill(Color(hex: colorHex).opacity(0.18))
-            Circle()
-                .fill(Color(hex: colorHex))
-                .frame(width: size, height: size)
+                .fill(Color(hex: colorHex).opacity(prominence == .regular ? 0.18 : 0.08))
+            if prominence == .regular {
+                Circle()
+                    .fill(Color(hex: colorHex))
+                    .frame(width: size, height: size)
+            } else {
+                Circle()
+                    .fill(Color(hex: colorHex).opacity(0.88))
+                    .frame(width: size, height: size)
+            }
         }
-        .frame(width: size + 14, height: size + 14)
+        .frame(width: size + (prominence == .regular ? 14 : 10), height: size + (prominence == .regular ? 14 : 10))
     }
 }
 
@@ -266,7 +285,7 @@ private struct LiveActivityTimerText: View {
         case .expanded:
             return .system(.title3, design: .rounded, weight: .bold)
         case .compact:
-            return .system(.caption, design: .rounded, weight: .bold)
+            return .system(size: 14, weight: .bold, design: .rounded)
         }
     }
     
