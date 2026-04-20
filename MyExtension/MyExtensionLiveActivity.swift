@@ -19,7 +19,7 @@ struct MyExtensionLiveActivity: Widget {
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    ActivityCompactBadge(colorHex: context.state.colorHex)
+                    ActivityDot(colorHex: context.state.colorHex, size: 12, ringSize: 36, cornerRadius: 10)
                 }
                 DynamicIslandExpandedRegion(.center) {
                     ExpandedActivitySummary(state: context.state)
@@ -31,15 +31,12 @@ struct MyExtensionLiveActivity: Widget {
                     ExpandedActivityFooter(state: context.state)
                 }
             } compactLeading: {
-                ActivityCompactBadge(colorHex: context.state.colorHex, size: 10, prominence: .subtle)
+                ActivityDot(colorHex: context.state.colorHex, size: 8, ringSize: 20, cornerRadius: 10)
+                    .padding(.leading, 2)
             } compactTrailing: {
-                HStack(spacing: 5) {
-                    Image(systemName: context.state.isRunning ? "clock.fill" : "pause.fill")
-                        .font(.system(size: 9, weight: .bold))
-                        .foregroundStyle(Color.white.opacity(0.68))
-                    LiveActivityTimerText(state: context.state, style: .compact)
-                }
-                .frame(minWidth: 54, alignment: .trailing)
+                LiveActivityTimerText(state: context.state, style: .compact)
+                    .frame(minWidth: 52, alignment: .trailing)
+                    .padding(.trailing, 4)
             } minimal: {
                 MinimalActivityView(state: context.state)
             }
@@ -48,65 +45,71 @@ struct MyExtensionLiveActivity: Widget {
     }
 }
 
+// MARK: - Lock Screen
+
 private struct LockScreenActivityView: View {
     let state: ActivitiesAttributes.ContentState
-    
+
     var body: some View {
-        HStack(alignment: .center, spacing: 14) {
-            ActivityCompactBadge(colorHex: state.colorHex, size: 14, prominence: .regular)
-            
-            VStack(alignment: .leading, spacing: 6) {
-                HStack(spacing: 8) {
+        HStack(alignment: .center, spacing: 13) {
+            ActivityDot(colorHex: state.colorHex, size: 14, ringSize: 42, cornerRadius: 12)
+
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 7) {
                     Text(state.name)
-                        .font(.system(.headline, design: .rounded, weight: .bold))
+                        .font(.system(size: 13, weight: .semibold, design: .rounded))
                         .lineLimit(1)
                         .foregroundStyle(.white)
-                    StatusCapsule(state: state)
+                    StatusPill(state: state)
                 }
-                
                 LiveActivityTimerText(state: state, style: .lockScreen)
             }
-            
+
             Spacer(minLength: 8)
+
             ActivityButtons(state: state, axis: .horizontal)
         }
-        .padding(.horizontal, 18)
-        .padding(.vertical, 16)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
         .background(lockScreenBackground)
-        .padding(.vertical, 8)
+        .padding(.vertical, 6)
     }
-    
+
     private var lockScreenBackground: some View {
-        RoundedRectangle(cornerRadius: 26, style: .continuous)
-            .fill(Color.black.opacity(0.88))
+        RoundedRectangle(cornerRadius: 24, style: .continuous)
+            .fill(Color.black.opacity(0.9))
             .overlay(alignment: .leading) {
-                RoundedRectangle(cornerRadius: 26, style: .continuous)
+                // Subtle color bleed from the left
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
                     .fill(
                         LinearGradient(
                             colors: [
-                                Color(hex: state.colorHex).opacity(0.28),
+                                Color(hex: state.colorHex).opacity(0.20),
                                 .clear
                             ],
                             startPoint: .leading,
-                            endPoint: .trailing
+                            endPoint: UnitPoint(x: 0.6, y: 0.5)
                         )
                     )
             }
             .overlay {
-                RoundedRectangle(cornerRadius: 26, style: .continuous)
-                    .strokeBorder(Color.white.opacity(0.08), lineWidth: 1)
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                    .strokeBorder(Color.white.opacity(0.07), lineWidth: 0.5)
             }
     }
 }
 
+// MARK: - Expanded Regions
+
 private struct ExpandedActivitySummary: View {
     let state: ActivitiesAttributes.ContentState
-    
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 2) {
             Text(state.name)
-                .font(.system(.subheadline, design: .rounded, weight: .bold))
+                .font(.system(size: 13, weight: .semibold, design: .rounded))
                 .lineLimit(1)
+                .foregroundStyle(.white)
             LiveActivityTimerText(state: state, style: .expanded)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -115,7 +118,7 @@ private struct ExpandedActivitySummary: View {
 
 private struct ExpandedActivityActions: View {
     let state: ActivitiesAttributes.ContentState
-    
+
     var body: some View {
         ActivityButtons(state: state, axis: .vertical)
     }
@@ -123,149 +126,156 @@ private struct ExpandedActivityActions: View {
 
 private struct ExpandedActivityFooter: View {
     let state: ActivitiesAttributes.ContentState
-    
+
     var body: some View {
-        HStack {
-            StatusCapsule(state: state)
+        HStack(spacing: 6) {
+            StatusPill(state: state)
             Spacer()
-            Text(state.isRunning ? "Controla la sesión desde aquí" : "La actividad está pausada")
-                .font(.system(.caption, design: .rounded, weight: .semibold))
-                .foregroundStyle(.secondary)
+            if !state.isRunning {
+                Text("Actividad pausada")
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.3))
+            }
         }
+        .padding(.top, 2)
     }
 }
 
+// MARK: - Minimal
+
 private struct MinimalActivityView: View {
     let state: ActivitiesAttributes.ContentState
-    
+
     var body: some View {
         ZStack {
             Circle()
-                .fill(Color(hex: state.colorHex).opacity(0.12))
+                .fill(Color(hex: state.colorHex).opacity(0.10))
             Image(systemName: state.isRunning ? "pause.fill" : "play.fill")
-                .font(.system(size: 11, weight: .bold))
+                .font(.system(size: 9, weight: .bold))
                 .foregroundStyle(Color(hex: state.colorHex))
         }
-        .frame(width: 24, height: 24)
+        .frame(width: 22, height: 22)
     }
 }
+
+// MARK: - Buttons
 
 private struct ActivityButtons: View {
     let state: ActivitiesAttributes.ContentState
     let axis: Axis
-    
+
     var body: some View {
         Group {
             if axis == .horizontal {
-                HStack(spacing: 8) {
-                    primaryButton
-                    stopButton
-                }
+                HStack(spacing: 7) { primaryButton; stopButton }
             } else {
-                VStack(spacing: 8) {
-                    primaryButton
-                    stopButton
-                }
+                VStack(spacing: 7) { primaryButton; stopButton }
             }
         }
     }
-    
+
     private var primaryButton: some View {
         Group {
             if state.isRunning {
                 Button(intent: PauseActivityIntent()) {
-                    Image(systemName: "pause.fill")
-                        .font(.system(size: 13, weight: .bold))
-                        .frame(width: 34, height: 34)
-                        .background(.white.opacity(0.15), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    buttonIcon("pause.fill")
+                        .background(.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
             } else {
                 Button(intent: ResumeActivityIntent()) {
-                    Image(systemName: "play.fill")
-                        .font(.system(size: 13, weight: .bold))
-                        .frame(width: 34, height: 34)
-                        .background(.white.opacity(0.15), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    buttonIcon("play.fill")
+                        .background(.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
             }
         }
         .buttonStyle(.plain)
     }
-    
+
     private var stopButton: some View {
         Button(intent: StopActivityIntent()) {
-            Image(systemName: "stop.fill")
-                .font(.system(size: 12, weight: .black))
-                .frame(width: 34, height: 34)
-                .background(.white, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                .foregroundStyle(Color.red.opacity(0.9))
+            buttonIcon("stop.fill", color: Color.red.opacity(0.85))
+                .background(Color.red.opacity(0.15), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
         }
         .buttonStyle(.plain)
     }
+
+    private func buttonIcon(_ name: String, color: Color = .white) -> some View {
+        Image(systemName: name)
+            .font(.system(size: 12, weight: .bold))
+            .foregroundStyle(color)
+            .frame(width: 32, height: 32)
+    }
 }
 
-private struct ActivityCompactBadge: View {
-    enum Prominence {
-        case regular
-        case subtle
-    }
-    
+// MARK: - Activity Dot Badge
+
+/// Minimal dot-in-ring badge. Replaces the old double-circle ActivityCompactBadge.
+private struct ActivityDot: View {
     let colorHex: String
-    var size: CGFloat = 14
-    var prominence: Prominence = .regular
-    
+    var size: CGFloat = 10
+    var ringSize: CGFloat = 24
+    var cornerRadius: CGFloat = 10
+
     var body: some View {
         ZStack {
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .fill(Color(hex: colorHex).opacity(0.14))
+                .frame(width: ringSize, height: ringSize)
             Circle()
-                .fill(Color(hex: colorHex).opacity(prominence == .regular ? 0.18 : 0.08))
-            if prominence == .regular {
-                Circle()
-                    .fill(Color(hex: colorHex))
-                    .frame(width: size, height: size)
-            } else {
-                Circle()
-                    .fill(Color(hex: colorHex).opacity(0.88))
-                    .frame(width: size, height: size)
-            }
+                .fill(Color(hex: colorHex))
+                .frame(width: size, height: size)
         }
-        .frame(width: size + (prominence == .regular ? 14 : 10), height: size + (prominence == .regular ? 14 : 10))
     }
 }
 
-private struct StatusCapsule: View {
+// MARK: - Status Pill
+
+private struct StatusPill: View {
     let state: ActivitiesAttributes.ContentState
-    
+
+    private var isRunning: Bool { state.isRunning }
+
     var body: some View {
-        Text(state.isRunning ? "EN CURSO" : "PAUSA")
-            .font(.system(size: 10, weight: .bold, design: .rounded))
-            .kerning(0.8)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 5)
-            .background(.white.opacity(state.isRunning ? 0.16 : 0.22), in: Capsule())
+        HStack(spacing: 4) {
+            Circle()
+                .fill(isRunning ? Color(hex: state.colorHex) : Color.white.opacity(0.3))
+                .frame(width: 5, height: 5)
+            Text(isRunning ? "En curso" : "Pausa")
+                .font(.system(size: 9, weight: .semibold, design: .rounded))
+                .kerning(0.4)
+        }
+        .padding(.horizontal, 7)
+        .padding(.vertical, 3)
+        .background(
+            Capsule()
+                .fill(isRunning
+                    ? Color(hex: state.colorHex).opacity(0.14)
+                    : Color.white.opacity(0.08))
+        )
+        .foregroundStyle(isRunning ? Color(hex: state.colorHex) : Color.white.opacity(0.45))
     }
 }
+
+// MARK: - Timer Text
 
 private struct LiveActivityTimerText: View {
-    enum DisplayStyle {
-        case lockScreen
-        case expanded
-        case compact
-    }
-    
+    enum DisplayStyle { case lockScreen, expanded, compact }
+
     let state: ActivitiesAttributes.ContentState
     let style: DisplayStyle
-    
+
     var body: some View {
         Group {
-            if state.isRunning, let timerStartDate = state.timerStartDate {
+            if state.isRunning, let start = state.timerStartDate {
                 if style == .compact {
                     Text(
-                        timerInterval: timerStartDate...Date.distantFuture,
+                        timerInterval: start...Date.distantFuture,
                         pauseTime: nil,
                         countsDown: false,
                         showsHours: state.elapsedTime >= 3600
                     )
                 } else {
-                    Text(timerStartDate, style: .timer)
+                    Text(start, style: .timer)
                 }
             } else {
                 Text(formattedTime(state.elapsedTime))
@@ -274,29 +284,25 @@ private struct LiveActivityTimerText: View {
         .font(font)
         .monospacedDigit()
         .lineLimit(1)
-        .minimumScaleFactor(0.75)
+        .minimumScaleFactor(0.8)
         .foregroundStyle(.white)
     }
-    
+
     private var font: Font {
         switch style {
-        case .lockScreen:
-            return .system(size: 28, weight: .black, design: .rounded)
-        case .expanded:
-            return .system(.title3, design: .rounded, weight: .bold)
-        case .compact:
-            return .system(size: 14, weight: .bold, design: .rounded)
+        case .lockScreen: return .system(size: 30, weight: .black, design: .rounded)
+        case .expanded:   return .system(size: 18, weight: .bold,  design: .rounded)
+        case .compact:    return .system(size: 13, weight: .bold,  design: .rounded)
         }
     }
-    
+
     private func formattedTime(_ seconds: TimeInterval) -> String {
-        let intSeconds = Int(seconds)
-        let hours = intSeconds / 3600
-        let minutes = (intSeconds % 3600) / 60
-        let secs = intSeconds % 60
-        return String(format: "%02d:%02d:%02d", hours, minutes, secs)
+        let t = Int(seconds)
+        return String(format: "%02d:%02d:%02d", t / 3600, (t % 3600) / 60, t % 60)
     }
 }
+
+// MARK: - Previews
 
 struct MyExtensionLiveActivity_Previews: PreviewProvider {
     static let attributes = ActivitiesAttributes()
@@ -307,10 +313,10 @@ struct MyExtensionLiveActivity_Previews: PreviewProvider {
         timerStartDate: Date().addingTimeInterval(-1000),
         isRunning: true
     )
-    
+
     static var previews: some View {
         attributes.previewContext(content, viewKind: .content)
-            .previewDisplayName("Content")
+            .previewDisplayName("Lock Screen")
         attributes.previewContext(content, viewKind: .dynamicIsland(.compact))
             .previewDisplayName("Compact")
         attributes.previewContext(content, viewKind: .dynamicIsland(.expanded))
